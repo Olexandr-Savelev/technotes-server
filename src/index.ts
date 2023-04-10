@@ -10,6 +10,7 @@ import router from "./routes";
 import { logger } from "./middlewares/logger";
 import { errorHandler } from "./middlewares/errorHandler";
 import { corsOptions } from "./config/corsOptions";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -44,4 +45,15 @@ const server = http.createServer(app);
 
 server.listen(port, () => {
   console.log(`Server running on port http://localhost:${port}`);
+});
+
+mongoose.Promise = Promise;
+
+mongoose.connect(process.env.MONGO_URI!);
+
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "connection error: "));
+db.once("open", function () {
+  console.log("Successfully connected to MongoDB.");
 });
