@@ -1,16 +1,18 @@
 import express, { Express, Request, Response } from "express";
+import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import cors from "cors";
-import http from "http";
 import path from "path";
 import dotenv from "dotenv";
-import router from "./routes";
+
 import { logger } from "./middlewares/logger";
 import { errorHandler } from "./middlewares/errorHandler";
 import { corsOptions } from "./config/corsOptions";
-import mongoose from "mongoose";
+
+import router from "./routes";
+import usersRouter from "./routes/usersRoutes";
 
 dotenv.config();
 
@@ -27,6 +29,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/", router);
+app.use("/users", usersRouter);
 
 app.all("*", (req: Request, res: Response) => {
   res.status(404);
@@ -41,9 +44,7 @@ app.all("*", (req: Request, res: Response) => {
 
 app.use(errorHandler);
 
-const server = http.createServer(app);
-
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server running on port http://localhost:${port}`);
 });
 
