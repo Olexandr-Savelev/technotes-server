@@ -1,9 +1,18 @@
-import mongoose from "mongoose";
-import mongooseSequence from "mongoose-sequence";
+import mongoose, { Document, Error, Model, Types } from "mongoose";
+import CounterModel from "./Counter";
 
-const AutoIncrement = mongooseSequence(mongoose as any) as any;
+interface NoteDocument extends Document {
+  _id: Types.ObjectId;
+  user: object;
+  title: string;
+  text: string;
+  completed: boolean;
+  ticket: string;
+}
 
-const NoteModel = new mongoose.Schema(
+interface NoteModel extends Model<NoteDocument> {}
+
+const NoteSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -18,20 +27,29 @@ const NoteModel = new mongoose.Schema(
       type: String,
       required: true,
     },
-    complete: {
+    completed: {
       type: Boolean,
       default: false,
     },
+    ticket: { type: String },
   },
   {
     timestamps: true,
   }
 );
 
-NoteModel.plugin(AutoIncrement, {
-  inc_field: "ticket",
-  id: "ticketNums",
-  start_seq: 500,
+NoteSchema.pre("save", async function (next) {
+  try {
+    const counter = await CounterModel.findByIdAndUpdate(
+      "ticket",
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    this.ticket = counter.seq.toString();
+    next();
+  } catch (err: any) {
+    next(err);
+  }
 });
 
-export default mongoose.model("Note", NoteModel);
+export default mongoose.model<NoteDocument, NoteModel>("Note", NoteSchema);

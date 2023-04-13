@@ -15,7 +15,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 
   if (!username || !password || !Array.isArray(roles) || !roles.length) {
     res.status(409);
-    throw new ErrorEvent("All fields are required.");
+    throw new Error("All fields are required.");
   }
 
   const existingUser = await User.findOne({ username: username }).lean().exec();

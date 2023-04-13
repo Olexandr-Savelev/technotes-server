@@ -13,6 +13,7 @@ import { corsOptions } from "./config/corsOptions";
 
 import router from "./routes";
 import usersRouter from "./routes/usersRoutes";
+import notesRouter from "./routes/notesRoutes";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use(cookieParser());
 
 app.use("/", router);
 app.use("/users", usersRouter);
+app.use("/notes", notesRouter);
 
 app.all("*", (req: Request, res: Response) => {
   res.status(404);
