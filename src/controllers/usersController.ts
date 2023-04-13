@@ -78,10 +78,10 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("User with this name is already exist.");
   }
 
-  // const user = await User.findByIdAndUpdate(
-  //   { _id: id },
-  //   { username: username }
-  // );
+  const user = await User.findByIdAndUpdate(
+    { _id: id },
+    { username: username }
+  );
 
   if (!user) {
     res.status(400);
