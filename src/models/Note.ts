@@ -31,7 +31,9 @@ const NoteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    ticket: { type: String },
+    ticket: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -39,6 +41,10 @@ const NoteSchema = new mongoose.Schema(
 );
 
 NoteSchema.pre("save", async function (next) {
+  if (this.ticket) {
+    return next();
+  }
+
   try {
     const counter = await CounterModel.findByIdAndUpdate(
       "ticket",
